@@ -1,50 +1,72 @@
 #include "Core.h"
 
-// 20 Milliseconds, 50 loops per second by default
-time_t targetSleepNanoseconds = 20000000L;
+#include "Utils.h"
+#include "Modules.h"
+
+//  20 Milliseconds, 50 loops per second by default
+time_t TARGET_SLEEP_MICROSECONDS = 20000L;
 
 void Core_Run(Core_Start start, Core_StartLate lateStart, Core_Update update, Core_UpdateLate lateUpdate)
 {
+    Monitor_Initialize();
+
     start();
 
     lateStart();
 
-    struct timespec loopStartTime;
-    struct timespec loopLatestTime;
-    struct timespec loopSleepTime;
-    time_t sleepNanoseconds;
+    time_t sleepMicroseconds;
+
+    Timer loopTimer = TimerStack_Create("Core Loop Timer");
 
     while (true)
     {
-        clock_gettime(CLOCK_MONOTONIC, &loopStartTime);
+        Timer_Start(&loopTimer);
 
         update();
 
         lateUpdate();
 
-        refresh(); // ncurses buffer swap
+        Timer_Stop(&loopTimer);
 
-        clock_gettime(CLOCK_MONOTONIC, &loopLatestTime);
+        sleepMicroseconds = TARGET_SLEEP_MICROSECONDS - ((loopTimer.endTime.seconds - loopTimer.startTime.seconds) * 1000000L + (loopTimer.endTime.nanoseconds - loopTimer.startTime.nanoseconds) / 1000);
 
-        sleepNanoseconds = targetSleepNanoseconds - ((loopLatestTime.tv_sec - loopStartTime.tv_sec) * 1000000000L + (loopLatestTime.tv_nsec - loopStartTime.tv_nsec));
-
-        if (sleepNanoseconds > 0)
+        if (sleepMicroseconds > 0)
         {
-            loopSleepTime.tv_sec = sleepNanoseconds / 1000000000L;
-            loopSleepTime.tv_nsec = sleepNanoseconds % 1000000000L;
-            nanosleep(&loopSleepTime, NULL);
+            Core_SleepMicroseconds(sleepMicroseconds);
         }
     }
 }
 
 void Core_Stop(int exitCode)
 {
-    endwin(); // ncurses terminate
+    DebugInfo("Core is stopping with exit code %d", exitCode);
 
-    _exit(exitCode); // program
+    while (true)
+    {
+    }
 }
 
-void Core_SetTargetLoopPerSecond(unsigned int tlps)
+void Core_SetTargetLoopPerSecond(time_t tlps)
 {
-    targetSleepNanoseconds = (1.0 / (tlps == 0 ? 1 : tlps)) * 1000000000.0;
+    TARGET_SLEEP_MICROSECONDS = (1.0 / (tlps == 0 ? 1 : tlps)) * 1000000.0;
+}
+
+void Core_SleepMicroseconds(time_t microseconds)
+{
+    delayMicroseconds(microseconds);
+}
+
+void Core_DebugLog(const char *header, const char *format, ...)
+{
+    TimePoint timer;
+    char buffer[256];
+    TimePoint_Update(&timer);
+    va_list args;
+    va_start(args, format);
+    snprintf(buffer, sizeof(buffer), "[%02d:%02d:%02d.%03d] : [%s] : ",
+             (int)((timer.seconds / 60) % 60), (int)(timer.seconds % 60), (int)(timer.nanoseconds / 1000000),
+             header);
+    vsnprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), format, args);
+    strcat(buffer, "\n");
+    va_end(args);
 }

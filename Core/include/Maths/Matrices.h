@@ -1,6 +1,8 @@
 #pragma once
 
-#include "BaseGlobal.h"
+#include "Core.h"
+
+#pragma region Typedefs
 
 /// @brief Represents a 2x2 matrix.
 typedef struct Matrix2
@@ -19,6 +21,8 @@ typedef struct Matrix4
 {
     float matrix[4][4];
 } Matrix4;
+
+#pragma endregion
 
 #pragma region Matrix2
 

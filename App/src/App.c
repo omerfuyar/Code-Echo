@@ -1,6 +1,4 @@
 #include "App.h"
-#include "Modules/InputManager.h"
-#include "ncurses.h"
 
 void App_Start()
 {
@@ -19,7 +17,7 @@ void App_Update()
 
 void App_UpdateLate()
 {
-    // DebugInfo("Late Update");
+    DebugInfo("Late Update");
 }
 
 void App_Stop(int exitCode)

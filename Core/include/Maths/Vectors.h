@@ -1,6 +1,8 @@
 #pragma once
 
-#include "BaseGlobal.h"
+#include "Core.h"
+
+#pragma region Typedefs
 
 // A vector that contains 2 float values. Can be used with helper functions.
 typedef struct Vector2
@@ -49,6 +51,8 @@ typedef struct Vector4Int
     int z;
     int w;
 } Vector4Int;
+
+#pragma endregion
 
 #pragma region Vector2
 
