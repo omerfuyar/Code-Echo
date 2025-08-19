@@ -2,7 +2,7 @@
 
 #include "Core.h"
 
-#pragma region Typedefs
+#pragma region typedefs
 
 /// @brief Represents a 2x2 matrix.
 typedef struct Matrix2

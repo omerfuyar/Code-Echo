@@ -2,7 +2,7 @@
 
 #include "Core.h"
 
-#pragma region Typedefs
+#pragma region typedefs
 
 // A vector that contains 2 float values. Can be used with helper functions.
 typedef struct Vector2
