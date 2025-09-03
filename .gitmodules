@@ -1,0 +1,3 @@
+[submodule "lib/Arduino_MultiFunctionShield"]
+	path = lib/Arduino_MultiFunctionShield
+	url = https://github.com/coderfls/Arduino_MultiFunctionShield.git
