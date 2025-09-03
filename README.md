@@ -4,3 +4,9 @@
 * My goal is making a running game in this 2 core, 500kb ram device.
 * I will try to make this project as cross platform as I can and try to keep it simple. 
 * I am using PlatformIO Arduino framework to develop projects.
+
+## To clone the repository
+Use :
+``` bash
+git clone --recurse-submodules https://github.com/omerfuyar/Code-Echo.git
+```
