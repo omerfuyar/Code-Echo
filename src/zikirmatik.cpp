@@ -1,6 +1,18 @@
 // zikirmatik
 
-#include "main.h"
+#include <Arduino.h>
+#include <MultiFunctionShield.h>
+
+#define DigitalClose(pin) digitalWrite(pin, HIGH)
+#define DigitalOpen(pin) digitalWrite(pin, LOW)
+
+#define DigitalIsActive(pin) (digitalRead(pin) == LOW)
+
+#define BUTTON_COUNT 3
+#define LED_COUNT 4
+
+#define Led(index) (LED_1_PIN - index)
+#define Button(index) (BUTTON_1_PIN + index)
 
 #define WAIT_TIME_MS 100
 
@@ -21,7 +33,7 @@ void setup()
 	for (uint8_t i = 0; i < LED_COUNT; i++)
 	{
 		pinMode(Led(i), OUTPUT);
-		LedClose(Led(i));
+		DigitalClose(Led(i));
 	}
 
 	for (uint8_t i = 0; i < BUTTON_COUNT; i++)
@@ -34,33 +46,33 @@ void setup()
 		counters[i] = 0;
 	}
 
-	LedOpen(Led(counterIndex));
+	DigitalOpen(Led(counterIndex));
 	MFS.Display(counters[counterIndex]);
 }
 
 void loop()
 {
-	if (ButtonPressed(Button(BUTTON_INDEX_SELECT)) && !buttonsPressed[BUTTON_INDEX_SELECT])
+	if (DigitalIsActive(Button(BUTTON_INDEX_SELECT)) && !buttonsPressed[BUTTON_INDEX_SELECT])
 	{
 		counterIndex = (counterIndex + 1) % LED_COUNT;
 
 		for (uint8_t i = 0; i < LED_COUNT; i++)
 		{
-			LedClose(Led(i));
+			DigitalClose(Led(i));
 		}
 
-		LedOpen(Led(counterIndex));
+		DigitalClose(Led(counterIndex));
 
 		buttonsPressed[BUTTON_INDEX_SELECT] = true;
 
 		MFS.Display(counters[counterIndex]);
 	}
-	else if (!ButtonPressed(Button(BUTTON_INDEX_SELECT)))
+	else if (!DigitalIsActive(Button(BUTTON_INDEX_SELECT)))
 	{
 		buttonsPressed[BUTTON_INDEX_SELECT] = false;
 	}
 
-	if (ButtonPressed(Button(BUTTON_INDEX_INCREMENT)) && !buttonsPressed[BUTTON_INDEX_INCREMENT])
+	if (DigitalIsActive(Button(BUTTON_INDEX_INCREMENT)) && !buttonsPressed[BUTTON_INDEX_INCREMENT])
 	{
 		counters[counterIndex]++;
 
@@ -68,12 +80,12 @@ void loop()
 
 		MFS.Display(counters[counterIndex]);
 	}
-	else if (!ButtonPressed(Button(BUTTON_INDEX_INCREMENT)))
+	else if (!DigitalIsActive(Button(BUTTON_INDEX_INCREMENT)))
 	{
 		buttonsPressed[BUTTON_INDEX_INCREMENT] = false;
 	}
 
-	if (ButtonPressed(Button(BUTTON_INDEX_RESET)) && !buttonsPressed[BUTTON_INDEX_RESET])
+	if (DigitalIsActive(Button(BUTTON_INDEX_RESET)) && !buttonsPressed[BUTTON_INDEX_RESET])
 	{
 		counters[counterIndex] = 0;
 
@@ -81,7 +93,7 @@ void loop()
 
 		MFS.Display(counters[counterIndex]);
 	}
-	else if (!ButtonPressed(Button(BUTTON_INDEX_RESET)))
+	else if (!DigitalIsActive(Button(BUTTON_INDEX_RESET)))
 	{
 		buttonsPressed[BUTTON_INDEX_RESET] = false;
 	}
